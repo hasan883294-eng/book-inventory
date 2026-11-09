@@ -414,7 +414,7 @@ const fmt = ts => dtf.format(new Date(Number(ts)));
 let TOKEN = localStorage.getItem("bims_token") || "";
 
 // آدرس وب‌اپ Apps Script (لینک /exec) — بعد از Deploy اینجا قرار دهید
-const API_URL = "https://script.google.com/macros/s/AKfycbyumeaVNyB46qtKyVNojAq_cQlLAyU3FbJ_WVQI2EJLlRt6ne-p30KSyZyRpWD9Qls/exec";
+const API_URL = "PASTE_YOUR_EXEC_URL_HERE";
 
 async function api(fn, ...args){
   let r;
@@ -1179,7 +1179,8 @@ function scannerFormats(){
   return [
     Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8,
     Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
-    Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE_39
+    Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE_39,
+    Html5QrcodeSupportedFormats.ITF
   ];
 }
 function startScanner(){

@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <base target="_top" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="theme-color" content="#0c6b4c" />
+  <title>انبار کتاب</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    :root{
+      --paper:#f4f0e6; --card:#fdfbf6; --ink:#221d13; --ink2:#6f6754; --line:#e6dcc6;
+      --moss:#0c6b4c; --mossd:#084c37; --mosss:#dcefe4;
+      --ember:#c74e12; --emberd:#96380b; --embers:#fbe6d4;
+      --gold:#8a6716; --golds:#f3e8c4;
+      --blood:#b3261e; --bloods:#f8dcd8;
+      --sh:0 1px 2px rgba(34,29,19,.05),0 16px 40px -24px rgba(34,29,19,.25);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--paper);color:var(--ink);font-family:Vazirmatn,system-ui,sans-serif;min-height:100dvh;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:1150px;margin:0 auto;padding:0 16px 90px}
+    .mono{font-family:ui-monospace,Menlo,monospace}
+    .muted{color:var(--ink2)} .b{font-weight:800} .xb{font-weight:900}
+    .sm{font-size:12px}.xs{font-size:11px}.lg{font-size:15px}
+
+    /* هدر */
+    header.top{position:sticky;top:0;z-index:30;background:rgba(253,251,246,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+    .topin{max-width:1150px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{width:42px;height:42px;border-radius:14px;background:var(--moss);color:#fff;display:grid;place-items:center;box-shadow:0 10px 24px -10px rgba(12,107,76,.7);font-size:22px}
+    .tabs{max-width:1150px;margin:0 auto;padding:0 16px 10px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+    .tabs::-webkit-scrollbar{display:none}
+    .tab{white-space:nowrap;border:1px solid var(--line);background:var(--card);color:var(--ink2);padding:8px 14px;border-radius:999px;font:700 12px Vazirmatn;cursor:pointer;transition:.2s}
+    .tab.on{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+    .tab.acc{ color:var(--moss); border-color:rgba(12,107,76,.35)}
+    .tab.acc.on{background:var(--moss);border-color:var(--moss);color:#fff}
+
+    .card{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh)}
+    .pad{padding:18px}
+    @media(min-width:640px){.pad{padding:22px}}
+
+    /* دکمه */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:none;cursor:pointer;font:800 13px Vazirmatn;border-radius:13px;height:44px;padding:0 16px;transition:.18s;user-select:none}
+    .btn:active{transform:scale(.97)}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .btn.moss{background:var(--moss);color:#fff;box-shadow:0 8px 20px -8px rgba(12,107,76,.6)}
+    .btn.moss:hover{background:var(--mossd)}
+    .btn.ember{background:var(--ember);color:#fff;box-shadow:0 8px 20px -8px rgba(199,78,18,.6)}
+    .btn.ember:hover{background:var(--emberd)}
+    .btn.soft{background:var(--mosss);color:var(--mossd)}
+    .btn.ghost{background:transparent;color:var(--ink2)} .btn.ghost:hover{background:rgba(34,29,19,.06)}
+    .btn.danger{background:var(--bloods);color:var(--blood)} .btn.danger:hover{background:var(--blood);color:#fff}
+    .btn.line{background:var(--card);border:1px solid var(--line);color:var(--ink)}
+    .btn.big{height:52px;border-radius:16px;font-size:15px}
+    .iconbtn{width:34px;height:34px;border:none;border-radius:10px;display:grid;place-items:center;cursor:pointer;transition:.15s;font-size:15px}
+    .iconbtn:active{transform:scale(.94)}
+
+    /* ورودی */
+    .inp{width:100%;height:44px;border:1px solid var(--line);background:rgba(255,255,255,.75);border-radius:13px;padding:0 14px;font:700 13px Vazirmatn;color:var(--ink)}
+    .inp:focus{outline:none;border-color:rgba(12,107,76,.5);background:#fff}
+    .inp::placeholder{color:rgba(111,103,84,.5);font-weight:400}
+    label.lbl{display:block;font:800 11px Vazirmatn;color:var(--ink2);margin-bottom:6px}
+    .hint{font-size:10px;color:rgba(111,103,84,.75);margin-top:5px;display:block}
+
+    /* چیپ */
+    .chip{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font:800 12px Vazirmatn;cursor:pointer;transition:.18s}
+    .chip:active{transform:scale(.95)}
+    .chip.on.moss{background:var(--moss);border-color:var(--moss);color:#fff}
+    .chip.on.ember{background:var(--ember);border-color:var(--ember);color:#fff}
+    .chip.on.ink{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+
+    /* نشان موجودی */
+    .badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 12px;font:900 11px Vazirmatn;white-space:nowrap}
+    .badge.ok{background:var(--mosss);color:var(--mossd)}
+    .badge.low{background:var(--embers);color:var(--emberd)}
+    .badge.empty{background:var(--bloods);color:var(--blood)}
+
+    /* جدول */
+    .scrl{overflow-x:auto}
+    table.tbl{width:100%;min-width:760px;border-collapse:collapse;text-align:right;font-size:13px}
+    .tbl th{padding:11px 14px;font-size:10.5px;color:var(--ink2);border-bottom:1px solid var(--line);background:rgba(34,29,19,.03);white-space:nowrap}
+    .tbl td{padding:11px 14px;border-bottom:1px solid rgba(230,220,198,.6);vertical-align:middle}
+    .tbl tr:hover td{background:rgba(34,29,19,.02)}
+
+    /* آمار */
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    @media(min-width:900px){.stats{grid-template-columns:repeat(5,1fr)}}
+    .stat{padding:16px;position:relative;overflow:hidden;transition:.25s}
+    .stat:hover{transform:translateY(-2px)}
+    .stat .v{font-size:28px;font-weight:900;margin-top:6px}
+    .stat .ic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:20px}
+    .ic.moss{background:var(--mosss)} .ic.ember{background:var(--embers)} .ic.gold{background:var(--golds)} .ic.blood{background:var(--bloods)} .ic.ink{background:rgba(34,29,19,.08)}
+
+    .grid2{display:grid;gap:16px}
+    @media(min-width:960px){.grid2{grid-template-columns:1fr 1fr} .grid23{display:grid;gap:16px;grid-template-columns:2fr 1fr}}
+    .g12{display:grid;gap:12px;grid-template-columns:1fr}
+    @media(min-width:640px){.g12{grid-template-columns:1fr 1fr}}
+
+    .li{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid rgba(230,220,198,.6)}
+    .li:last-child{border-bottom:none}
+    .qbadge{min-width:34px;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex-shrink:0}
+
+    /* مودال */
+    .mback{position:fixed;inset:0;background:rgba(34,29,19,.55);backdrop-filter:blur(4px);z-index:60;display:flex;align-items:center;justify-content:center;padding:16px}
+    .modal{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:0 24px 60px -24px rgba(34,29,19,.35);width:100%;max-width:480px;padding:24px;max-height:90dvh;overflow-y:auto}
+    .modal.dark{background:#181410;color:var(--paper);border-color:#3a3025;max-width:520px}
+
+    /* اسکنر */
+    #scanRegion{width:100%;border-radius:16px;overflow:hidden;background:#000}
+    #scanRegion video{border-radius:16px}
+    .scanframe{position:relative}
+    .scanbox{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+    .scanbox .in{position:relative;width:280px;height:150px;border:2px solid rgba(220,239,228,.85);border-radius:12px}
+    .laser{position:absolute;left:8px;right:8px;top:6px;height:2px;border-radius:99px;background:var(--ember);box-shadow:0 0 12px 2px rgba(199,78,18,.8);animation:laser 2.2s ease-in-out infinite}
+    @keyframes laser{0%,100%{transform:translateY(0)}50%{transform:translateY(136px)}}
+
+    /* توست */
+    #toasts{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;width:min(94vw,420px)}
+    .toast{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:16px;font:800 12px/1.7 Vazirmatn;color:#fff;box-shadow:0 16px 40px -16px rgba(0,0,0,.4);animation:rise .35s cubic-bezier(.22,1,.36,1)}
+    .toast.ok{background:rgba(8,76,55,.96)} .toast.err{background:rgba(179,38,30,.96)} .toast.info{background:rgba(34,29,19,.96)}
+
+    @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+    .rise{animation:rise .4s cubic-bezier(.22,1,.36,1) both}
+    .skel{padding:18px}.skel .l{height:14px;border-radius:8px;background:rgba(34,29,19,.08);margin-bottom:12px;animation:pulse 1.2s infinite}
+    @keyframes pulse{50%{opacity:.5}}
+
+    .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px}
+    .seg button{height:54px;border-radius:16px;border:none;cursor:pointer;font:900 14px Vazirmatn;color:var(--ink2);background:transparent;transition:.2s}
+    .seg button.onIn{background:var(--moss);color:#fff;box-shadow:0 10px 24px -10px rgba(12,107,76,.7)}
+    .seg button.onOut{background:var(--ember);color:#fff;box-shadow:0 10px 24px -10px rgba(199,78,18,.7)}
+
+    .barin{display:flex;gap:8px}
+    .barin input{flex:1;height:52px;border-radius:16px;border:2px solid var(--line);background:rgba(255,255,255,.8);padding:0 16px;font:900 17px ui-monospace,Menlo,monospace;letter-spacing:2px;text-align:left;direction:ltr;color:var(--ink)}
+    .barin input:focus{outline:none;border-color:rgba(12,107,76,.6);background:#fff}
+    .barin .cam{width:60px;border:none;border-radius:16px;background:var(--ink);color:var(--paper);font-size:24px;cursor:pointer;transition:.2s}
+    .barin .cam:hover{background:var(--mossd)} .barin .cam:active{transform:scale(.95)}
+
+    .qtyrow{display:flex;gap:8px}
+    .qtyrow button{width:48px;border:1px solid var(--line);background:var(--card);border-radius:13px;font-size:20px;cursor:pointer;transition:.15s}
+    .qtyrow button:active{transform:scale(.92)}
+    .qtyrow input{flex:1;height:48px;border:1px solid var(--line);border-radius:13px;text-align:center;font:900 22px Vazirmatn;background:rgba(255,255,255,.8)}
+    .qtyrow input:focus{outline:none;border-color:rgba(12,107,76,.5)}
+
+    .empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:44px 20px;text-align:center}
+    .empty .ic{width:58px;height:58px;border-radius:20px;background:rgba(34,29,19,.05);display:grid;place-items:center;font-size:26px}
+
+    .spin{display:inline-block;width:15px;height:15px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;vertical-align:-2px}
+    @keyframes rot{to{transform:rotate(360deg)}}
+
+    .dk-card{margin-top:20px;display:flex;gap:14px;align-items:flex-start;border:1.5px dashed rgba(12,107,76,.35);background:rgba(220,239,228,.4);border-radius:18px;padding:16px 18px}
+    .dk-card .ic{width:44px;height:44px;border-radius:14px;background:var(--moss);color:#fff;display:grid;place-items:center;font-size:22px;flex-shrink:0}
+
+    /* درگاه ورود */
+    #gate{position:fixed;inset:0;z-index:200;background:var(--paper);display:none;align-items:center;justify-content:center;padding:16px}
+    #gate.show{display:flex}
+    #gate .glow1{position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:640px;height:300px;border-radius:50%;background:rgba(12,107,76,.1);filter:blur(60px);pointer-events:none}
+    #gate .glow2{position:absolute;bottom:-140px;right:-90px;width:340px;height:340px;border-radius:50%;background:rgba(199,78,18,.1);filter:blur(60px);pointer-events:none}
+    #gateCard{width:100%;max-width:380px;position:relative}
+    #gateCard.shake{animation:shake .45s}
+    @keyframes shake{0%,100%{transform:none}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-7px)}80%{transform:translateX(7px)}}
+    .gatelogo{width:64px;height:64px;border-radius:22px;background:var(--moss);color:#fff;display:grid;place-items:center;margin:0 auto 16px;box-shadow:0 16px 36px -12px rgba(12,107,76,.7)}
+    .gatelogo svg{width:32px;height:32px}
+    .pwdwrap{position:relative}
+    .pwdwrap svg.ic{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:rgba(111,103,84,.6);pointer-events:none}
+    .pwdwrap .eye{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:none;background:transparent;cursor:pointer;color:var(--ink2);display:grid;place-items:center;border-radius:10px}
+    .pwdwrap .eye:hover{background:rgba(34,29,19,.06)}
+    .pwdwrap .eye svg{width:17px;height:17px}
+
+    /* ورود اکسل */
+    .dropzone{border:2px dashed var(--line);border-radius:16px;padding:26px 14px;text-align:center;cursor:pointer;transition:.2s;background:rgba(255,255,255,.5)}
+    .dropzone:hover,.dropzone.drag{border-color:rgba(12,107,76,.55);background:rgba(220,239,228,.35)}
+    .imp3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+    .imp3 .b1{border-radius:12px;padding:10px 6px}
+    .imp3 .v{font-size:20px;font-weight:900}
+    .imp3 .l{font-size:10px;font-weight:800;margin-top:2px}
+    .ferr{max-height:120px;overflow-y:auto;background:rgba(248,220,216,.5);border-radius:12px;padding:10px 12px}
+
+    /* اسکن از روی عکس */
+    .scan-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .scan-tip{font-size:11px;line-height:1.9;color:rgba(244,240,230,.78);text-align:center;margin-top:12px}
+  </style>
+</head>
+<body>
+
+<!-- درگاه ورود -->
+<div id="gate" class="show">
+  <div class="glow1"></div><div class="glow2"></div>
+  <div id="gateCard" class="card pad rise">
+    <div class="gatelogo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
+    </div>
+    <p class="xb" style="text-align:center;font-size:19px">انبار کتاب</p>
+    <p class="xs muted" style="text-align:center;margin-top:4px">پنل مدیریت موجودی کتاب‌فروشی</p>
+    <div style="display:flex;gap:8px;align-items:center;border:1.5px dashed rgba(138,103,22,.4);background:rgba(243,232,196,.5);border-radius:14px;padding:10px 12px;margin:16px 0 14px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--gold);flex-shrink:0"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <p class="xs b muted" style="font-size:11px;line-height:1.7">این بخش خصوصی است؛ برای ادامه رمز عبور پنل را وارد کنید.</p>
+    </div>
+    <form onsubmit="return doLogin(event)">
+      <label class="lbl">رمز عبور</label>
+      <div class="pwdwrap">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="15" r="4"/><path d="m10.85 12.15 8.65-8.65"/><path d="m18 5 2 2"/><path d="m15 8 2 2"/></svg>
+        <input id="pwd" type="password" dir="ltr" autocomplete="current-password" placeholder="••••••••"
+               class="inp mono" style="height:52px;border-radius:16px;font-size:17px;letter-spacing:4px;text-align:left;padding-right:38px;padding-left:44px" />
+        <button type="button" class="eye" onclick="togglePwd()" aria-label="نمایش/پنهان رمز">
+          <svg id="eyeIc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <p id="gateErr" class="xs xb" style="display:none;color:var(--blood);background:var(--bloods);border-radius:10px;padding:8px 12px;margin-top:10px;text-align:center"></p>
+      <button id="gateBtn" class="btn big moss" style="width:100%;margin-top:14px" type="submit">
+        ورود به پنل
+      </button>
+    </form>
+    <p class="xs muted" style="text-align:center;margin-top:14px;font-size:10px">نشست شما پس از ورود ۷ روز فعال می‌ماند</p>
+  </div>
+</div>
+
+<header class="top">
+  <div class="topin">
+    <div class="brand">
+      <span class="logo">📗</span>
+      <span>
+        <span class="xb" style="display:block;font-size:16px">انبار کتاب</span>
+        <span class="xs muted" id="todayLbl">…</span>
+      </span>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn line" style="height:38px;font-size:11px" onclick="doLogout()" title="خروج از پنل">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        خروج
+      </button>
+      <button class="btn moss" onclick="goReg('in','')">＋ ثبت ورود / خروج</button>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="tab on" data-tab="dash" onclick="switchTab('dash')">داشبورد</button>
+    <button class="tab" data-tab="wh" onclick="switchTab('wh')">انبار</button>
+    <button class="tab acc" data-tab="reg" onclick="switchTab('reg')">ثبت ورود / خروج</button>
+    <button class="tab" data-tab="tx" onclick="switchTab('tx')">سوابق گردش</button>
+    <button class="tab" data-tab="books" onclick="switchTab('books')">کتاب‌ها</button>
+    <button class="tab" data-tab="ch" onclick="switchTab('ch')">کانال‌ها</button>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <!-- ================= داشبورد ================= -->
+  <section id="tab-dash" class="rise">
+    <div id="dashBody"></div>
+  </section>
+
+  <!-- ================= انبار ================= -->
+  <section id="tab-wh" class="rise" style="display:none">
+    <h1 class="xb" style="font-size:24px">تب انبار</h1>
+    <p class="muted sm" style="margin:6px 0 16px">گزارش کامل موجودی همه کتاب‌ها</p>
+    <div id="whSummary" class="stats" style="margin-bottom:14px"></div>
+    <div class="card pad" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px">
+      <input id="whQ" class="inp" style="flex:1;min-width:200px" placeholder="جست‌وجو: عنوان، نویسنده، ناشر، بارکد یا DKPC…" oninput="wh.q=this.value;renderWhTable()" />
+      <button class="chip on ink" id="whF_all" onclick="whSetFilter('all')">همه</button>
+      <button class="chip ember" id="whF_low" onclick="whSetFilter('low')">کمتر از ۵</button>
+      <button class="chip ember" id="whF_empty" onclick="whSetFilter('empty')">ناموجود</button>
+      <select id="whSort" class="inp" style="width:auto;height:36px;font-size:11px" onchange="wh.sort=this.value;renderWhTable()">
+        <option value="title">مرتب‌سازی: عنوان</option>
+        <option value="lowest">مرتب‌سازی: کمترین موجودی</option>
+        <option value="highest">مرتب‌سازی: بیشترین موجودی</option>
+      </select>
+    </div>
+    <div class="card scrl"><div id="whTable"></div></div>
+  </section>
+
+  <!-- ================= ثبت ورود/خروج ================= -->
+  <section id="tab-reg" class="rise" style="display:none;max-width:760px;margin:0 auto">
+    <h1 class="xb" style="font-size:24px">ثبت ورود / خروج</h1>
+    <p class="muted sm" style="margin:6px 0 16px">بارکد را اسکن کنید؛ سیستم کتاب را پیدا و گردش را ثبت می‌کند.</p>
+
+    <div class="card seg" style="margin-bottom:16px">
+      <button id="segIn" class="onIn" onclick="regSetDir('in')">⬇ ورود به انبار</button>
+      <button id="segOut" onclick="regSetDir('out')">⬆ خروج از انبار</button>
+    </div>
+
+    <div class="card pad">
+      <p class="b sm" style="margin-bottom:10px">⌗ بارکد کتاب</p>
+      <div class="barin">
+        <input id="regBarcode" inputmode="numeric" placeholder="اسکن یا تایپ بارکد و Enter"
+               onkeydown="if(event.key==='Enter')regLookup()" />
+        <button class="cam" onclick="openScanner(function(c){$('regBarcode').value=c;regLookup();})" title="اسکن با دوربین">📷</button>
+      </div>
+      <div id="regBookBox" style="margin-top:14px"></div>
+    </div>
+
+    <div id="regDetails" class="card pad" style="display:none;margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <p class="xs xb muted" id="regChLbl">کانال</p>
+        <a href="javascript:switchTab('ch')" class="xs b" style="color:var(--mossd)">مدیریت کانال‌ها</a>
+      </div>
+      <div id="regChannels" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+
+      <div class="g12" style="margin-top:16px">
+        <div>
+          <label class="lbl">تعداد</label>
+          <div class="qtyrow">
+            <button onclick="regQty(-1)">−</button>
+            <input id="regQty" type="number" min="1" value="1" dir="ltr" />
+            <button onclick="regQty(1)">＋</button>
+          </div>
+          <span id="regWarn" class="hint" style="color:var(--blood);font-weight:800"></span>
+        </div>
+        <div>
+          <label class="lbl">یادداشت (اختیاری)</label>
+          <input id="regNote" class="inp" style="height:48px" placeholder="مثلاً: شماره فاکتور، توضیح مرجوعی…" />
+        </div>
+      </div>
+
+      <button id="regSubmit" class="btn big moss" style="width:100%;margin-top:18px" onclick="regSubmit()"></button>
+    </div>
+
+    <div id="regSession" style="margin-top:16px"></div>
+  </section>
+
+  <!-- ================= سوابق ================= -->
+  <section id="tab-tx" class="rise" style="display:none">
+    <h1 class="xb" style="font-size:24px">سوابق گردش انبار</h1>
+    <p class="muted sm" style="margin:6px 0 16px">همه ورودی‌ها (خرید، مرجوعی) و خروجی‌ها (حضوری، دیجی‌کالا و…)</p>
+    <div class="card pad" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px">
+      <input id="txQ" class="inp" style="flex:1;min-width:200px" placeholder="جست‌وجو در کتاب، کانال یا یادداشت…" oninput="txf.q=this.value;renderTxTable()" />
+      <button class="chip on ink" id="txF_all" onclick="txSetDir('all')">همه</button>
+      <button class="chip moss" id="txF_in" onclick="txSetDir('in')">ورودی</button>
+      <button class="chip ember" id="txF_out" onclick="txSetDir('out')">خروجی</button>
+      <button class="btn line" style="height:36px" onclick="loadTxs(true)">↻ به‌روزرسانی</button>
+    </div>
+    <div class="card scrl"><div id="txTable"><div class="skel"><div class="l"></div><div class="l"></div><div class="l"></div></div></div></div>
+  </section>
+
+  <!-- ================= کتاب‌ها ================= -->
+  <section id="tab-books" class="rise" style="display:none">
+    <h1 class="xb" style="font-size:24px">کارتابل کتاب‌ها</h1>
+    <p class="muted sm" style="margin:6px 0 16px">کد تنوع دیجی‌کالا (DKPC) را اینجا برای اتصال آینده ذخیره کنید</p>
+
+    <div class="card pad" style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+        <p class="b sm">＋ افزودن کتاب جدید</p>
+        <button class="btn line" style="height:36px;font-size:11px" onclick="openImport()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="11"/><polyline points="9 14 12 11 15 14"/></svg>
+          ورود گروهی از اکسل
+        </button>
+      </div>
+      <div class="g12">
+        <div>
+          <label class="lbl">بارکد (ISBN) *</label>
+          <div class="barin">
+            <input id="nbBarcode" inputmode="numeric" placeholder="اسکن یا تایپ…" style="height:44px;font-size:14px" />
+            <button class="cam" style="width:52px;height:44px;font-size:19px" onclick="openScanner(function(c){$('nbBarcode').value=c;})">📷</button>
+          </div>
+        </div>
+        <div><label class="lbl">عنوان کتاب *</label><input id="nbTitle" class="inp" /></div>
+        <div><label class="lbl">نویسنده</label><input id="nbAuthor" class="inp" /></div>
+        <div><label class="lbl">ناشر</label><input id="nbPub" class="inp" /></div>
+        <div>
+          <label class="lbl">کد تنوع دیجی‌کالا (DKPC)</label>
+          <input id="nbDkpc" class="inp mono" dir="ltr" style="text-align:left" placeholder="اختیاری" />
+          <span class="hint">فعلاً اختیاری؛ برای اتصال خودکار آینده لازم می‌شود</span>
+        </div>
+        <div style="display:flex;align-items:end"><button class="btn moss" style="width:100%" onclick="addBook()">ثبت کتاب</button></div>
+      </div>
+    </div>
+
+    <input id="bkQ" class="inp" style="margin-bottom:12px" placeholder="جست‌وجو در کارتابل…" oninput="bookQ=this.value;renderBooks()" />
+    <div class="card scrl"><div id="booksTable"></div></div>
+  </section>
+
+  <!-- ================= کانال‌ها ================= -->
+  <section id="tab-ch" class="rise" style="display:none">
+    <h1 class="xb" style="font-size:24px">کانال‌های ورود و خروج</h1>
+    <p class="muted sm" style="margin:6px 0 16px">خروجی‌ها: حضوری، دیجی‌کالا و هر کانال دلخواه دیگر</p>
+
+    <div class="card pad" style="display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:16px">
+      <div style="flex:1;min-width:180px"><label class="lbl">نام کانال جدید</label>
+        <input id="chName" class="inp" placeholder="مثلاً: تخفیف‌خورده، همکار، آمازون…" /></div>
+      <div style="width:130px"><label class="lbl">نوع کانال</label>
+        <select id="chDir" class="inp"><option value="out">خروجی</option><option value="in">ورودی</option></select></div>
+      <button class="btn moss" onclick="addChannel()">＋ افزودن</button>
+    </div>
+
+    <div class="grid2" id="chCols"></div>
+
+    <div class="dk-card">
+      <span class="ic">🛒</span>
+      <div>
+        <p class="b sm" style="color:var(--mossd)">کانال «دیجی‌کالا» برای آینده آماده است</p>
+        <p class="muted sm" style="margin-top:4px;line-height:1.8">فعلاً خروجی دیجی‌کالا را دستی ثبت می‌کنید. در نسخه بعد، با کد تنوع (DKPC) که در کارتابل کتاب‌ها ذخیره می‌کنید، سفارش‌ها مستقیم از API دیجی‌کالا خوانده و خودکار از موجودی کم می‌شوند.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div id="toasts"></div>
+<div id="modalRoot"></div>
+
+<script>
+/* ================= ابزارها ================= */
+const $ = id => document.getElementById(id);
+const FA = "۰۱۲۳۴۵۶۷۸۹";
+const fa = n => String(n).replace(/[0-9]/g, d => FA[+d]);
+const faInt = n => fa(Math.round(n).toLocaleString("en-US"));
+const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const dtf = new Intl.DateTimeFormat("fa-IR",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Tehran"});
+const dayf = new Intl.DateTimeFormat("fa-IR",{dateStyle:"full",timeZone:"Asia/Tehran"});
+const fmt = ts => dtf.format(new Date(Number(ts)));
+
+let TOKEN = localStorage.getItem("bims_token") || "";
+
+// آدرس وب‌اپ Apps Script (لینک /exec) — بعد از Deploy اینجا قرار دهید
+const API_URL = "PASTE_YOUR_EXEC_URL_HERE";
+
+async function api(fn, ...args){
+  let r;
+  try {
+    r = await fetch(API_URL, {
+      method: "POST",
+      // text/plain تا مرورگر پیش‌درخواست CORS نفرستد
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ fn, args: [TOKEN, ...args] })
+    });
+  } catch (e) {
+    throw new Error("خطا در ارتباط با سرور");
+  }
+  let data;
+  try { data = await r.json(); } catch (e) { throw new Error("پاسخ نامعتبر از سرور"); }
+  if (!data.ok){
+    const msg = data.error || "خطا";
+    if (msg.indexOf("نشست") >= 0) showGate();
+    throw new Error(msg);
+  }
+  return data.result;
+}
+
+function toast(kind, msg){
+  const t = document.createElement("div");
+  t.className = "toast " + kind;
+  t.innerHTML = '<span style="font-size:16px">' + (kind==="ok"?"✔":kind==="err"?"⚠":"ℹ") + '</span><span>' + esc(msg) + '</span>';
+  $("toasts").appendChild(t);
+  setTimeout(() => { t.style.opacity = "0"; t.style.transition = ".3s"; setTimeout(()=>t.remove(), 320); }, 4200);
+}
+
+function openModal(html, dark){
+  $("modalRoot").innerHTML = '<div class="mback" onclick="if(event.target===this)closeModal()"><div class="modal' + (dark?" dark":"") + ' rise">' + html + '</div></div>';
+}
+function closeModal(){ $("modalRoot").innerHTML = ""; }
+
+function confirmDlg(title, desc, yesLabel, onYes){
+  window.__cfYes = onYes;
+  openModal(
+    '<div style="text-align:center"><div class="ic blood" style="width:56px;height:56px;border-radius:18px;display:grid;place-items:center;margin:0 auto 14px;font-size:26px">🗑</div>' +
+    '<p class="xb">' + esc(title) + '</p>' +
+    '<p class="muted sm" style="margin:8px 0 20px;line-height:1.8">' + esc(desc) + '</p>' +
+    '<div style="display:flex;gap:8px;justify-content:center">' +
+    '<button class="btn ghost" onclick="closeModal()">انصراف</button>' +
+    '<button class="btn danger" onclick="closeModal();window.__cfYes()">' + esc(yesLabel) + '</button></div></div>'
+  );
+}
+
+function stockBadge(stock){
+  if (stock <= 0) return '<span class="badge empty">ناموجود</span>';
+  if (stock < 5) return '<span class="badge low">' + faInt(stock) + ' عدد</span>';
+  return '<span class="badge ok">' + faInt(stock) + ' عدد</span>';
+}
+
+/* ================= وضعیت ================= */
+let S = null;
+let curTab = "dash";
+let TXS = null;
+const wh = { q:"", filter:"all", sort:"title" };
+const txf = { q:"", dir:"all" };
+let bookQ = "";
+const reg = { dir:"in", book:null, notFound:false, channelId:null, session:[] };
+
+$("todayLbl").textContent = dayf.format(new Date());
+
+function switchTab(t){
+  curTab = t;
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
+  ["dash","wh","reg","tx","books","ch"].forEach(k => $("tab-"+k).style.display = k===t ? "block" : "none");
+  if (t === "tx" && !TXS) loadTxs();
+  renderAll();
+}
+
+function renderAll(){
+  if (!S){ return; }
+  if (curTab === "dash") renderDash();
+  if (curTab === "wh") { renderWhSummary(); renderWhTable(); }
+  if (curTab === "reg") renderReg();
+  if (curTab === "tx") renderTxTable();
+  if (curTab === "books") renderBooks();
+  if (curTab === "ch") renderChannels();
+}
+
+async function refresh(){
+  S = await api("apiGetState");
+  TXS = null;
+  renderAll();
+}
+
+/* ================= درگاه ورود و بوت ================= */
+function showGate(){
+  $("gate").classList.add("show");
+  setTimeout(() => { const p = $("pwd"); if (p) p.focus(); }, 80);
+}
+function hideGate(){ $("gate").classList.remove("show"); }
+
+function togglePwd(){
+  const p = $("pwd");
+  p.type = p.type === "password" ? "text" : "password";
+  $("eyeIc").style.opacity = p.type === "password" ? "1" : ".55";
+}
+
+function doLogout(){
+  localStorage.removeItem("bims_token");
+  TOKEN = "";
+  location.reload();
+}
+
+let loginBusy = false;
+async function doLogin(ev){
+  ev.preventDefault();
+  if (loginBusy) return false;
+  loginBusy = true;
+  $("gateErr").style.display = "none";
+  const b = $("gateBtn");
+  b.disabled = true;
+  b.innerHTML = '<span class="spin" style="border-color:rgba(255,255,255,.4);border-top-color:#fff"></span> در حال بررسی…';
+  try {
+    const r = await api("apiLogin", $("pwd").value);
+    TOKEN = r.token;
+    localStorage.setItem("bims_token", TOKEN);
+    $("pwd").value = "";
+    hideGate();
+    bootLoad();
+  } catch(e){
+    $("gateErr").textContent = e.message;
+    $("gateErr").style.display = "block";
+    const c = $("gateCard");
+    c.classList.remove("shake");
+    void c.offsetWidth;
+    c.classList.add("shake");
+    $("pwd").value = "";
+  } finally {
+    loginBusy = false;
+    b.disabled = false;
+    b.textContent = "ورود به پنل";
+  }
+  return false;
+}
+
+async function bootLoad(){
+  try {
+    S = await api("apiGetState");
+    renderAll();
+  } catch(e){
+    document.querySelector(".wrap").innerHTML = '<div class="card"><div class="empty"><div class="ic">⚠️</div><p class="xb">خطا در اتصال</p><p class="muted sm">' + esc(e.message) + '</p></div></div>';
+  }
+}
+
+(async function boot(){
+  if (!TOKEN){ showGate(); return; }
+  try {
+    const c = await api("apiCheck");
+    if (!c.ok){
+      localStorage.removeItem("bims_token");
+      TOKEN = "";
+      showGate();
+      return;
+    }
+    hideGate();
+    bootLoad();
+  } catch(e){
+    document.querySelector(".wrap").innerHTML = '<div class="card"><div class="empty"><div class="ic">⚠️</div><p class="xb">خطا در اتصال</p><p class="muted sm">' + esc(e.message) + '</p></div></div>';
+  }
+})();
+
+/* ================= داشبورد ================= */
+function renderDash(){
+  const low = S.books.filter(b => b.stock < 5).sort((a,b) => a.stock - b.stock);
+  const totalStock = S.books.reduce((a,b) => a + b.stock, 0);
+
+  let h = '<div class="stats">';
+  h += stat("ink", fgInt(S.books.length), "عناوین کتاب", "📚");
+  h += stat("moss", fgInt(totalStock), "مجموع موجودی", "📦", "عدد کتاب در انبار");
+  h += stat("moss", fgInt(S.todayIn), "ورودی امروز", "⬇️");
+  h += stat("ember", fgInt(S.todayOut), "خروجی امروز", "⬆️");
+  h += stat(low.length ? "blood" : "gold", fgInt(low.length), "عناوین کم‌موجودی", "⚠️", "کمتر از ۵ عدد");
+  h += '</div>';
+
+  h += '<div class="grid23" style="margin-top:16px">';
+  // کم‌موجودی
+  h += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line)">' +
+       '<p class="xb sm">⚠️ کتاب‌های با موجودی کمتر از ۵</p>' +
+       (low.length ? '<span class="badge empty">' + fgInt(low.length) + ' عنوان</span>' : "") + '</div>';
+  if (!low.length){
+    h += '<div class="empty"><div class="ic">📦</div><p class="xb sm">همه‌چیز مرتب است</p><p class="muted xs">هیچ کتابی موجودی کمتر از ۵ عدد ندارد.</p></div>';
+  } else {
+    low.slice(0,8).forEach(b => {
+      h += '<div class="li"><div style="flex:1;min-width:0"><p class="xb sm" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(b.title) + '</p>' +
+           '<p class="xs muted mono" dir="ltr" style="text-align:right">' + esc(b.barcode) + '</p></div>' +
+           stockBadge(b.stock) +
+           '<button class="iconbtn soft" style="background:var(--mosss)" title="ثبت ورودی" onclick="goReg(\'in\',\'' + esc(b.barcode) + '\')">＋</button></div>';
+    });
+    if (low.length > 8) h += '<a href="javascript:wh.filter=\'low\';switchTab(\'wh\')" style="display:block;text-align:center;padding:11px;font:900 11px Vazirmatn;color:var(--mossd);border-top:1px solid var(--line)">مشاهده همه (' + fgInt(low.length) + ' عنوان) در تب انبار ←</a>';
+  }
+  h += '</div>';
+
+  // آخرین گردش‌ها
+  h += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line)">' +
+       '<p class="xb sm">🕘 آخرین گردش‌ها</p><a href="javascript:switchTab(\'tx\')" class="xs b" style="color:var(--mossd)">همه سوابق</a></div>';
+  if (!S.recent.length){
+    h += '<div class="empty"><div class="ic">🕘</div><p class="xb sm">هنوز گردشی ثبت نشده</p><p class="muted xs">اولین ورود یا خروج را با اسکن بارکد ثبت کنید.</p></div>';
+  } else {
+    S.recent.forEach(t => { h += txRow(t); });
+  }
+  h += '</div></div>';
+
+  h += '<div class="dk-card"><span class="ic">🛒</span><div><p class="b sm" style="color:var(--mossd)">آماده‌سازی برای اتصال مستقیم دیجی‌کالا</p>' +
+       '<p class="muted sm" style="margin-top:4px;line-height:1.8">برای هر کتاب می‌توانید «کد تنوع دیجی‌کالا (DKPC)» را در تب <a href="javascript:switchTab(\'books\')" style="font-weight:900;color:var(--mossd)">کتاب‌ها</a> ثبت کنید تا در نسخه بعد، سفارش‌ها خودکار از موجودی کم شوند.</p></div></div>';
+
+  $("dashBody").innerHTML = h;
+}
+function stat(tone, val, label, icon, sub){
+  return '<div class="card stat"><div style="display:flex;justify-content:space-between;gap:8px"><div>' +
+         '<p class="xs b muted">' + label + '</p><p class="v">' + val + '</p>' +
+         (sub ? '<p class="xs muted" style="margin-top:4px">' + sub + '</p>' : "") +
+         '</div><span class="ic ' + tone + '">' + icon + '</span></div></div>';
+}
+function fgInt(n){ return faInt(n); }
+function txRow(t){
+  const isIn = t.direction === "in";
+  return '<div class="li"><span class="qbadge" style="background:' + (isIn ? "var(--mosss)" : "var(--embers)") + '">' + (isIn ? "⬇" : "⬆") + '</span>' +
+         '<div style="flex:1;min-width:0"><p class="xs xb" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(t.book.title) + '</p>' +
+         '<p class="xs muted" style="font-size:10px;margin-top:2px">' + esc(t.channel.name) + ' — ' + fmt(t.ts) + '</p></div>' +
+         '<span class="xb" dir="ltr" style="color:' + (isIn ? "var(--mossd)" : "var(--emberd)") + '">' + (isIn ? "+" : "−") + faInt(t.quantity) + '</span></div>';
+}
+
+/* ================= انبار ================= */
+function renderWhSummary(){
+  const t = { n:S.books.length, s:0, low:0, empty:0 };
+  S.books.forEach(b => { t.s += b.stock; if (b.stock <= 0) t.empty++; else if (b.stock < 5) t.low++; });
+  $("whSummary").style.gridTemplateColumns = "";
+  $("whSummary").innerHTML =
+    mini("عناوین", t.n, "var(--ink)") + mini("مجموع موجودی", t.s, "var(--mossd)") +
+    mini("کمتر از ۵", t.low, "var(--emberd)") + mini("ناموجود", t.empty, "var(--blood)");
+  $("whSummary").className = "stats";
+  $("whSummary").style.cssText = "margin-bottom:14px;grid-template-columns:repeat(2,1fr)";
+  if (window.innerWidth >= 640) $("whSummary").style.gridTemplateColumns = "repeat(4,1fr)";
+}
+function mini(label, val, color){
+  return '<div class="card" style="padding:13px 16px"><p class="xs b muted">' + label + '</p><p class="xb" style="font-size:23px;margin-top:4px;color:' + color + '">' + faInt(val) + '</p></div>';
+}
+function whSetFilter(f){ wh.filter = f; renderWhTable(); markChips(); }
+function markChips(){
+  $("whF_all").className = "chip" + (wh.filter==="all" ? " on ink" : "");
+  $("whF_low").className = "chip" + (wh.filter==="low" ? " on ember" : "");
+  $("whF_empty").className = "chip" + (wh.filter==="empty" ? " on ember" : "");
+}
+function renderWhTable(){
+  let list = S.books;
+  const q = wh.q.trim();
+  if (q) list = list.filter(b => b.title.includes(q) || (b.author||"").includes(q) || (b.publisher||"").includes(q) || b.barcode.includes(q) || (b.dkpc||"").includes(q));
+  if (wh.filter === "low") list = list.filter(b => b.stock > 0 && b.stock < 5);
+  if (wh.filter === "empty") list = list.filter(b => b.stock <= 0);
+  list = [...list];
+  if (wh.sort === "lowest") list.sort((a,b)=>a.stock-b.stock);
+  else if (wh.sort === "highest") list.sort((a,b)=>b.stock-a.stock);
+
+  if (!list.length){
+    $("whTable").innerHTML = '<div class="empty"><div class="ic">🔍</div><p class="xb sm">موردی یافت نشد</p></div>';
+    return;
+  }
+  let h = '<table class="tbl"><thead><tr><th>کتاب</th><th>بارکد</th><th>ناشر</th><th>DKPC</th><th style="text-align:center">ورودی کل</th><th style="text-align:center">خروجی کل</th><th style="text-align:center">موجودی</th><th style="text-align:center">عملیات</th></tr></thead><tbody>';
+  list.forEach(b => {
+    h += '<tr><td style="max-width:220px"><p class="xs xb" style="font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(b.title) + '</p>' +
+         (b.author ? '<p class="xs muted" style="margin-top:2px">' + esc(b.author) + '</p>' : "") + '</td>' +
+         '<td><span class="mono xs muted" dir="ltr">' + esc(b.barcode) + '</span></td>' +
+         '<td class="xs muted">' + esc(b.publisher || "—") + '</td>' +
+         '<td>' + (b.dkpc ? '<span class="mono" dir="ltr" style="background:var(--golds);color:var(--gold);padding:2px 8px;border-radius:7px;font-size:10.5px;font-weight:800">' + esc(b.dkpc) + '</span>' : '<span class="xs muted">—</span>') + '</td>' +
+         '<td class="b" style="text-align:center;color:var(--mossd)">' + faInt(b.totalIn) + '</td>' +
+         '<td class="b" style="text-align:center;color:var(--emberd)">' + faInt(b.totalOut) + '</td>' +
+         '<td style="text-align:center">' + stockBadge(b.stock) + '</td>' +
+         '<td><div style="display:flex;gap:5px;justify-content:center">' +
+           '<button class="iconbtn" style="background:var(--mosss)" title="ثبت ورودی" onclick="goReg(\'in\',\'' + esc(b.barcode) + '\')">⬇</button>' +
+           '<button class="iconbtn" style="background:var(--embers)" title="ثبت خروجی" onclick="goReg(\'out\',\'' + esc(b.barcode) + '\')">⬆</button>' +
+           '<button class="iconbtn" style="background:rgba(34,29,19,.08)" title="ویرایش" onclick="openEditBook(' + b.id + ')">✎</button>' +
+         '</div></td></tr>';
+  });
+  h += '</tbody></table>';
+  $("whTable").innerHTML = h;
+}
+
+/* ================= ثبت ورود/خروج ================= */
+function goReg(dir, barcode){
+  switchTab("reg");
+  regSetDir(dir);
+  if (barcode){ $("regBarcode").value = barcode; regLookup(); }
+}
+function regSetDir(dir){
+  reg.dir = dir; reg.channelId = null;
+  $("segIn").className = dir === "in" ? "onIn" : "";
+  $("segOut").className = dir === "out" ? "onOut" : "";
+  renderReg();
+}
+function regQty(d){ const el = $("regQty"); el.value = Math.max(1, (parseInt(el.value)||1) + d); regCheckWarn(); }
+function regCheckWarn(){
+  const w = $("regWarn"); const q = parseInt($("regQty").value)||1;
+  if (reg.dir === "out" && reg.book && q > reg.book.stock){
+    w.textContent = "موجودی کافی نیست — فقط " + faInt(reg.book.stock) + " عدد در انبار است.";
+    $("regSubmit").disabled = true;
+  } else { w.textContent = ""; $("regSubmit").disabled = !reg.book || !reg.channelId; }
+}
+$("regQty") && $("regQty").addEventListener("input", regCheckWarn);
+
+function renderReg(){
+  $("regChLbl").textContent = reg.dir === "in" ? "نوع ورودی" : "کانال خروجی";
+  const chs = S.channels.filter(c => c.direction === reg.dir);
+  if (!chs.some(c => c.id === reg.channelId)) reg.channelId = chs[0] ? chs[0].id : null;
+  $("regChannels").innerHTML = chs.map(c =>
+    '<button class="chip' + (c.id === reg.channelId ? " on " + (reg.dir==="in"?"moss":"ember") : "") + '" onclick="reg.channelId=' + c.id + ';renderReg()">' + esc(c.name) + '</button>'
+  ).join("");
+  const btn = $("regSubmit");
+  btn.className = "btn big " + (reg.dir === "in" ? "moss" : "ember");
+  btn.style.width = "100%";
+  btn.innerHTML = (reg.dir === "in" ? "✔ ثبت ورودی — " : "✔ ثبت خروجی — ") + faInt(parseInt($("regQty").value)||1) + " عدد";
+  $("regDetails").style.display = reg.book ? "block" : "none";
+  regCheckWarn();
+  renderRegSession();
+}
+
+async function regLookup(){
+  const code = $("regBarcode").value.trim();
+  if (!code) return;
+  reg.book = null; reg.notFound = false; renderReg();
+  $("regBookBox").innerHTML = '<div class="card" style="background:rgba(34,29,19,.04);padding:12px 16px"><span class="xs b muted"><span class="spin" style="border-color:rgba(34,29,19,.3);border-top-color:var(--ink2)"></span> در حال جست‌وجوی بارکد…</span></div>';
+  try {
+    const r = await api("apiLookupBarcode", code);
+    if (r.found){
+      reg.book = r.book; reg.notFound = false;
+      const b = r.book;
+      $("regBookBox").innerHTML =
+        '<div class="rise" style="border:1px solid rgba(12,107,76,.25);background:rgba(220,239,228,.4);border-radius:16px;padding:14px">' +
+        '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div style="min-width:0">' +
+        '<p class="xb">' + esc(b.title) + '</p>' +
+        '<p class="xs muted" style="margin-top:4px">' + esc([b.author, b.publisher].filter(Boolean).join(" — ") || "بدون مشخصات تکمیلی") + '</p>' +
+        (b.dkpc ? '<p class="xs b" style="color:var(--gold);margin-top:5px">کد تنوع دیجی‌کالا: <span class="mono" dir="ltr">' + esc(b.dkpc) + '</span></p>' : "") +
+        '</div><div style="text-align:left"><p class="xs b muted" style="font-size:10px;margin-bottom:4px">موجودی فعلی</p>' + stockBadge(b.stock) + '</div></div></div>';
+    } else {
+      reg.book = null; reg.notFound = true;
+      $("regBookBox").innerHTML =
+        '<div class="rise" style="border:1.5px dashed rgba(138,103,22,.5);background:rgba(243,232,196,.4);border-radius:16px;padding:14px">' +
+        '<p class="xb sm" style="color:var(--gold)">＋ کتابی با این بارکد ثبت نشده — همین‌جا اضافه‌اش کنید</p>' +
+        '<div class="g12" style="margin-top:12px">' +
+          '<div><label class="lbl">عنوان کتاب *</label><input id="nbfTitle" class="inp" /></div>' +
+          '<div><label class="lbl">نویسنده</label><input id="nbfAuthor" class="inp" /></div>' +
+          '<div><label class="lbl">ناشر</label><input id="nbfPub" class="inp" /></div>' +
+          '<div><label class="lbl">کد تنوع دیجی‌کالا (DKPC)</label><input id="nbfDkpc" class="inp mono" dir="ltr" style="text-align:left" placeholder="اختیاری" /></div>' +
+        '</div>' +
+        '<button class="btn moss" style="margin-top:12px" onclick="regCreateBook()">ایجاد کتاب و ادامه</button></div>';
+    }
+  } catch(e){ toast("err", e.message); }
+  renderReg();
+}
+
+async function regCreateBook(){
+  const title = $("nbfTitle").value.trim();
+  if (!title){ toast("err", "عنوان کتاب الزامی است"); return; }
+  try {
+    await api("apiAddBook", { barcode: $("regBarcode").value.trim(), title, author: $("nbfAuthor").value.trim(), publisher: $("nbfPub").value.trim(), dkpc: $("nbfDkpc").value.trim() });
+    toast("ok", "کتاب جدید در کارتابل ثبت شد");
+    await refresh();
+    await regLookup();
+  } catch(e){ toast("err", e.message); }
+}
+
+async function regSubmit(){
+  if (!reg.book || !reg.channelId) return;
+  const qty = parseInt($("regQty").value) || 1;
+  const btn = $("regSubmit");
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> در حال ثبت…';
+  try {
+    const r = await api("apiAddTransaction", { bookId: reg.book.id, channelId: reg.channelId, quantity: qty, note: $("regNote").value.trim(), direction: reg.dir });
+    const chName = (S.channels.find(c => c.id === reg.channelId) || {name:""}).name;
+    reg.session.unshift({ dir: reg.dir, qty, ch: chName, title: reg.book.title, ts: Date.now() });
+    reg.session = reg.session.slice(0, 6);
+    toast("ok", (reg.dir === "in" ? "ورودی" : "خروجی") + " ثبت شد — موجودی جدید «" + r.bookTitle + "»: " + faInt(r.newStock) + " عدد");
+    await refresh();
+    reg.book = null; reg.notFound = false;
+    $("regBarcode").value = ""; $("regNote").value = ""; $("regQty").value = 1;
+    $("regBookBox").innerHTML = "";
+    $("regDetails").style.display = "none";
+    $("regBarcode").focus();
+  } catch(e){ toast("err", e.message); }
+  renderReg();
+}
+
+function renderRegSession(){
+  if (!reg.session.length){ $("regSession").innerHTML = ""; return; }
+  let h = '<div class="card"><p class="xs xb muted" style="padding:12px 18px;border-bottom:1px solid var(--line)">آخرین ثبت‌های این نشست</p>';
+  reg.session.forEach(t => {
+    h += '<div class="li" style="padding:10px 18px"><span class="qbadge" style="width:30px;height:30px;min-width:30px;background:' + (t.dir==="in"?"var(--mosss)":"var(--embers)") + '">' + (t.dir==="in"?"⬇":"⬆") + '</span>' +
+         '<span class="xs xb" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(t.title) + '</span>' +
+         '<span class="xs muted">' + esc(t.ch) + '</span>' +
+         '<span class="xb" dir="ltr" style="color:' + (t.dir==="in"?"var(--mossd)":"var(--emberd)") + '">' + (t.dir==="in"?"+":"−") + faInt(t.qty) + '</span></div>';
+  });
+  h += '</div>';
+  $("regSession").innerHTML = h + '</div>';
+}
+
+/* ================= سوابق ================= */
+async function loadTxs(manual){
+  if (manual) $("txTable").innerHTML = '<div class="skel"><div class="l"></div><div class="l"></div><div class="l"></div></div>';
+  try { TXS = await api("apiListTransactions", 500); } catch(e){ toast("err", e.message); TXS = []; }
+  renderTxTable();
+}
+function txSetDir(d){
+  txf.dir = d;
+  $("txF_all").className = "chip" + (d==="all" ? " on ink" : "");
+  $("txF_in").className = "chip" + (d==="in" ? " on moss" : "");
+  $("txF_out").className = "chip" + (d==="out" ? " on ember" : "");
+  renderTxTable();
+}
+function renderTxTable(){
+  if (TXS === null){ $("txTable").innerHTML = '<div class="skel"><div class="l"></div><div class="l"></div><div class="l"></div></div>'; return; }
+  let list = TXS;
+  if (txf.dir !== "all") list = list.filter(t => t.direction === txf.dir);
+  const q = txf.q.trim();
+  if (q) list = list.filter(t => t.book.title.includes(q) || t.book.barcode.includes(q) || t.channel.name.includes(q) || (t.note||"").includes(q));
+  if (!list.length){ $("txTable").innerHTML = '<div class="empty"><div class="ic">🕘</div><p class="xb sm">گردشی یافت نشد</p></div>'; return; }
+  let h = '<table class="tbl"><thead><tr><th>زمان</th><th>کتاب</th><th>نوع</th><th>کانال</th><th style="text-align:center">تعداد</th><th>یادداشت</th></tr></thead><tbody>';
+  list.forEach(t => {
+    const isIn = t.direction === "in";
+    h += '<tr><td class="xs muted" style="white-space:nowrap">' + fmt(t.ts) + '</td>' +
+         '<td style="max-width:240px"><p class="xs xb" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(t.book.title) + '</p><p class="mono muted" dir="ltr" style="font-size:10px;margin-top:2px;text-align:right">' + esc(t.book.barcode) + '</p></td>' +
+         '<td><span class="badge ' + (isIn ? "ok" : "low") + '">' + (isIn ? "⬇ ورودی" : "⬆ خروجی") + '</span></td>' +
+         '<td class="xs b muted">' + esc(t.channel.name) + '</td>' +
+         '<td class="xb" dir="ltr" style="text-align:center;color:' + (isIn ? "var(--mossd)" : "var(--emberd)") + '">' + (isIn?"+":"−") + faInt(t.quantity) + '</td>' +
+         '<td class="xs muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(t.note || "—") + '</td></tr>';
+  });
+  h += '</tbody></table>';
+  $("txTable").innerHTML = h;
+}
+
+/* ================= کتاب‌ها ================= */
+async function addBook(){
+  const p = { barcode: $("nbBarcode").value.trim(), title: $("nbTitle").value.trim(), author: $("nbAuthor").value.trim(), publisher: $("nbPub").value.trim(), dkpc: $("nbDkpc").value.trim() };
+  if (!p.barcode){ toast("err", "بارکد کتاب الزامی است"); return; }
+  if (!p.title){ toast("err", "عنوان کتاب الزامی است"); return; }
+  try {
+    await api("apiAddBook", p);
+    toast("ok", "کتاب «" + p.title + "» ثبت شد");
+    ["nbBarcode","nbTitle","nbAuthor","nbPub","nbDkpc"].forEach(id => $(id).value = "");
+    await refresh();
+  } catch(e){ toast("err", e.message); }
+}
+
+function renderBooks(){
+  let list = S.books;
+  const q = bookQ.trim();
+  if (q) list = list.filter(b => b.title.includes(q) || (b.author||"").includes(q) || (b.publisher||"").includes(q) || b.barcode.includes(q) || (b.dkpc||"").includes(q));
+  if (!list.length){ $("booksTable").innerHTML = '<div class="empty"><div class="ic">🔍</div><p class="xb sm">کتابی یافت نشد</p></div>'; return; }
+  let h = '<table class="tbl"><thead><tr><th>عنوان</th><th>بارکد</th><th>نویسنده</th><th>ناشر</th><th>DKPC</th><th style="text-align:center">موجودی</th><th style="text-align:center">عملیات</th></tr></thead><tbody>';
+  list.forEach(b => {
+    h += '<tr><td class="xs xb" style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(b.title) + '</td>' +
+         '<td><span class="mono xs muted" dir="ltr">' + esc(b.barcode) + '</span></td>' +
+         '<td class="xs muted">' + esc(b.author || "—") + '</td>' +
+         '<td class="xs muted">' + esc(b.publisher || "—") + '</td>' +
+         '<td>' + (b.dkpc ? '<span class="mono" dir="ltr" style="background:var(--golds);color:var(--gold);padding:2px 8px;border-radius:7px;font-size:10.5px;font-weight:800">' + esc(b.dkpc) + '</span>' : '<span class="xs muted">—</span>') + '</td>' +
+         '<td style="text-align:center">' + stockBadge(b.stock) + '</td>' +
+         '<td><div style="display:flex;gap:5px;justify-content:center">' +
+           '<button class="iconbtn" style="background:rgba(34,29,19,.08)" title="ویرایش" onclick="openEditBook(' + b.id + ')">✎</button>' +
+           '<button class="iconbtn" style="background:var(--bloods)" title="حذف" onclick="delBook(' + b.id + ')">🗑</button>' +
+         '</div></td></tr>';
+  });
+  h += '</tbody></table>';
+  $("booksTable").innerHTML = h;
+}
+
+function openEditBook(id){
+  const b = S.books.find(x => x.id === id);
+  if (!b) return;
+  openModal(
+    '<p class="xb" style="margin-bottom:16px">📖 ویرایش کتاب</p>' +
+    '<div style="display:grid;gap:12px">' +
+      '<div><label class="lbl">بارکد (ISBN)</label><input id="ebBarcode" class="inp mono" dir="ltr" style="text-align:left" value="' + esc(b.barcode) + '" /></div>' +
+      '<div><label class="lbl">عنوان کتاب *</label><input id="ebTitle" class="inp" value="' + esc(b.title) + '" /></div>' +
+      '<div class="g12"><div><label class="lbl">نویسنده</label><input id="ebAuthor" class="inp" value="' + esc(b.author) + '" /></div>' +
+      '<div><label class="lbl">ناشر</label><input id="ebPub" class="inp" value="' + esc(b.publisher) + '" /></div></div>' +
+      '<div><label class="lbl">کد تنوع دیجی‌کالا (DKPC)</label><input id="ebDkpc" class="inp mono" dir="ltr" style="text-align:left" value="' + esc(b.dkpc) + '" placeholder="DKPC-..." /><span class="hint">برای اتصال خودکار آینده به سفارش‌های دیجی‌کالا</span></div>' +
+    '</div>' +
+    '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">' +
+      '<button class="btn ghost" onclick="closeModal()">انصراف</button>' +
+      '<button class="btn moss" onclick="saveEditBook(' + id + ')">ذخیره تغییرات</button></div>'
+  );
+}
+async function saveEditBook(id){
+  const p = { id, barcode: $("ebBarcode").value.trim(), title: $("ebTitle").value.trim(), author: $("ebAuthor").value.trim(), publisher: $("ebPub").value.trim(), dkpc: $("ebDkpc").value.trim() };
+  if (!p.barcode || !p.title){ toast("err", "بارکد و عنوان نمی‌توانند خالی باشند"); return; }
+  try {
+    await api("apiUpdateBook", p);
+    toast("ok", "کتاب ویرایش شد");
+    closeModal();
+    await refresh();
+  } catch(e){ toast("err", e.message); }
+}
+function delBook(id){
+  const b = S.books.find(x => x.id === id);
+  if (!b) return;
+  confirmDlg("حذف «" + b.title + "»؟", "اگر برای کتاب گردشی ثبت شده باشد، حذف ممکن نیست و باید اطلاعاتش را ویرایش کنید.", "حذف کتاب", async () => {
+    try { await api("apiDeleteBook", id); toast("ok", "کتاب حذف شد"); await refresh(); }
+    catch(e){ toast("err", e.message); }
+  });
+}
+
+/* ================= کانال‌ها ================= */
+async function addChannel(){
+  const name = $("chName").value.trim();
+  if (!name){ toast("err", "نام کانال الزامی است"); return; }
+  try {
+    await api("apiAddChannel", { name, direction: $("chDir").value });
+    toast("ok", "کانال «" + name + "» اضافه شد");
+    $("chName").value = "";
+    await refresh();
+  } catch(e){ toast("err", e.message); }
+}
+function renderChannels(){
+  const col = (dir, title, desc, icon, tone) => {
+    const rows = S.channels.filter(c => c.direction === dir);
+    let h = '<div class="card"><div style="display:flex;gap:12px;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line)">' +
+            '<span class="ic ' + tone + '" style="width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:19px">' + icon + '</span>' +
+            '<div><p class="xb sm">' + title + '</p><p class="xs muted" style="margin-top:2px;font-size:10.5px">' + desc + '</p></div></div>';
+    rows.forEach(c => {
+      h += '<div class="li"><span class="muted">⌗</span><span class="sm xb" style="flex:1">' + esc(c.name) + '</span>' +
+           (c.isSystem
+             ? '<span class="xs xb muted" style="background:rgba(34,29,19,.06);padding:4px 10px;border-radius:999px;font-size:10px">🔒 پیش‌فرض سیستم</span>'
+             : '<button class="iconbtn" style="background:var(--bloods)" onclick="delChannel(' + c.id + ',\'' + esc(c.name) + '\')">🗑</button>') +
+           '</div>';
+    });
+    return h + '</div>';
+  };
+  $("chCols").innerHTML =
+    col("in", "کانال‌های ورودی", "ورود به انبار؛ مثل خرید از ناشر یا مرجوعی مشتری", "⬇️", "moss") +
+    col("out", "کانال‌های خروجی", "خروج از انبار؛ مثل فروش حضوری یا سفارش دیجی‌کالا", "⬆️", "ember");
+}
+function delChannel(id, name){
+  confirmDlg("حذف کانال «" + name + "»؟", "کانال‌های دارای گردش حذف نمی‌شوند.", "حذف کانال", async () => {
+    try { await api("apiDeleteChannel", id); toast("ok", "کانال حذف شد"); await refresh(); }
+    catch(e){ toast("err", e.message); }
+  });
+}
+
+/* ================= ورود گروهی از اکسل ================= */
+let impFile = null, impBusy = false;
+
+function openImport(){
+  impFile = null;
+  const fileIco = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+  openModal(
+    '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:14px">' +
+      '<p class="xb sm" style="display:flex;align-items:center;gap:8px;color:var(--mossd)">' + fileIco + ' ورود گروهی کتاب‌ها از اکسل</p>' +
+      '<button class="iconbtn" style="background:rgba(34,29,19,.07)" onclick="closeModal()">✕</button></div>' +
+
+    // گام ۱ — نمونه
+    '<div style="display:flex;gap:10px;align-items:center;border:1.5px dashed rgba(12,107,76,.35);background:rgba(220,239,228,.4);border-radius:14px;padding:12px 14px;margin-bottom:14px">' +
+      '<div style="flex:1;min-width:0">' +
+        '<p class="xs xb" style="color:var(--mossd)">گام ۱ — فایل نمونه را بگیرید</p>' +
+        '<p class="xs muted" style="margin-top:3px;font-size:10.5px;line-height:1.8">ستون‌ها: بارکد، عنوان، نویسنده، ناشر، کد تنوع دیجی‌کالا و موجودی اولیه (اختیاری)</p>' +
+      '</div>' +
+      '<button class="btn line" style="height:36px;font-size:11px;flex-shrink:0" onclick="dlSample(this)">دانلود نمونه</button></div>' +
+
+    // گام ۲ — انتخاب فایل
+    '<p class="xs xb muted" style="margin-bottom:8px">گام ۲ — فایل پرشده را بارگذاری کنید</p>' +
+    '<div id="impDrop" class="dropzone" onclick="document.getElementById(\'impInput\').click()">' +
+      fileIco.replace('width:20px;height:20px','width:34px;height:34px') +
+      '<p class="b sm" style="margin-top:10px">فایل را اینجا رها کنید یا کلیک کنید</p>' +
+      '<p class="xs muted" style="margin-top:5px;font-size:10.5px">xlsx ،xls و csv — حداکثر ۵ مگابایت</p>' +
+    '</div>' +
+    '<input id="impInput" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="impPick(event)" />' +
+    '<div id="impFileRow" style="display:none;align-items:center;gap:8px;margin-top:10px;background:rgba(220,239,228,.5);border-radius:12px;padding:10px 12px">' +
+      fileIco.replace('width:20px;height:20px','width:17px;height:17px') +
+      '<span id="impFileName" class="mono xs xb" dir="ltr" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>' +
+      '<button class="iconbtn" style="background:rgba(34,29,19,.07)" onclick="impClear()">✕</button>' +
+    '</div>' +
+
+    '<p id="impErr" class="xs xb" style="display:none;color:var(--blood);background:var(--bloods);border-radius:12px;padding:10px 12px;margin-top:12px;line-height:1.8"></p>' +
+    '<div id="impReport"></div>' +
+
+    '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;border-top:1px solid var(--line);padding-top:14px">' +
+      '<button class="btn ghost" onclick="closeModal()">انصراف</button>' +
+      '<button id="impStart" class="btn moss" disabled onclick="importStart()">شروع ورود</button>' +
+    '</div>'
+  );
+
+  const dz = $("impDrop");
+  dz.addEventListener("dragover", e => { e.preventDefault(); dz.classList.add("drag"); });
+  dz.addEventListener("dragleave", () => dz.classList.remove("drag"));
+  dz.addEventListener("drop", e => {
+    e.preventDefault(); dz.classList.remove("drag");
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) impSet(f);
+  });
+}
+
+function impSet(f){
+  impFile = f;
+  $("impFileName").textContent = f.name;
+  $("impFileRow").style.display = "flex";
+  $("impStart").disabled = impBusy;
+  $("impErr").style.display = "none";
+  $("impReport").innerHTML = "";
+}
+function impPick(ev){ const f = ev.target.files && ev.target.files[0]; if (f) impSet(f); }
+function impClear(){
+  impFile = null;
+  $("impInput").value = "";
+  $("impFileRow").style.display = "none";
+  $("impStart").disabled = true;
+}
+
+async function dlSample(btn){
+  if (btn.disabled) return;
+  const old = btn.textContent;
+  btn.disabled = true; btn.textContent = "در حال ساخت…";
+  try {
+    const f = await api("apiGetSampleFile");
+    downloadBase64(f.name, f.base64, f.mime);
+    toast("ok", "فایل اکسل نمونه دانلود شد");
+  } catch(e){ toast("err", e.message); }
+  finally { btn.disabled = false; btn.textContent = old; }
+}
+
+async function importStart(){
+  if (!impFile || impBusy) return;
+  impBusy = true;
+  const b = $("impStart");
+  b.disabled = true;
+  b.innerHTML = '<span class="spin" style="border-color:rgba(255,255,255,.4);border-top-color:#fff"></span> در حال پردازش…';
+  $("impErr").style.display = "none";
+  $("impReport").innerHTML = "";
+  try {
+    const lname = impFile.name.toLowerCase();
+    let report;
+    if (lname.endsWith(".csv")) {
+      const text = stripBom(await impFile.text());
+      report = await api("apiImportBooks", parseCSV(text));
+    } else {
+      const dataUrl = await readAsDataUrl(impFile);
+      report = await api("apiImportExcel", { name: impFile.name, base64: dataUrl.split(",")[1] });
+    }
+    renderImpReport(report);
+    if (report.inserted > 0){
+      toast("ok", faInt(report.inserted) + " کتاب جدید ثبت شد");
+      await refresh();
+      renderBooks();
+    }
+  } catch(e){
+    $("impErr").textContent = e.message;
+    $("impErr").style.display = "block";
+  } finally {
+    impBusy = false;
+    b.disabled = !impFile;
+    b.textContent = "شروع ورود";
+  }
+}
+
+function renderImpReport(r){
+  const box = (val, label, bg, color) =>
+    '<div class="b1" style="background:' + bg + '"><p class="v" style="color:' + color + '">' + faInt(val) + '</p><p class="l" style="color:' + color + ';opacity:.8">' + label + '</p></div>';
+  let h = '<div style="border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px;background:rgba(255,255,255,.6)">' +
+    '<p class="xs xb" style="margin-bottom:10px">نتیجه ورود فایل</p>' +
+    '<div class="imp3">' +
+      box(r.inserted, "ثبت شد", "var(--mosss)", "var(--mossd)") +
+      box(r.duplicates, "تکراری (رد شد)", "var(--golds)", "var(--gold)") +
+      box(r.failed.length, "خطادار", r.failed.length ? "var(--bloods)" : "rgba(34,29,19,.05)", r.failed.length ? "var(--blood)" : "var(--ink2)") +
+    '</div>';
+  if (r.stockTx > 0){
+    h += '<p class="xs b" style="background:rgba(220,239,228,.6);border-radius:10px;padding:8px 10px;margin-top:10px;color:var(--mossd);font-size:10.5px;line-height:1.8">موجودی اولیه ' + faInt(r.stockTx) + ' عنوان هم به‌عنوان گردش «خرید» ثبت شد.</p>';
+  }
+  if (r.failed.length){
+    h += '<div class="ferr" style="margin-top:10px">';
+    r.failed.forEach(f => {
+      h += '<p class="xs b" style="color:var(--blood);font-size:10.5px;line-height:1.9">ردیف ' + faInt(f.row) + ': ' + esc(f.reason) + '</p>';
+    });
+    h += '</div>';
+  }
+  h += '</div>';
+  $("impReport").innerHTML = h;
+}
+
+/* ---------------- ابزارهای فایل ---------------- */
+function downloadBase64(name, base64, mime){
+  const bin = atob(base64);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  const url = URL.createObjectURL(new Blob([arr], { type: mime }));
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+function readAsDataUrl(file){
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(String(r.result));
+    r.onerror = () => rej(new Error("خواندن فایل ممکن نشد"));
+    r.readAsDataURL(file);
+  });
+}
+
+function stripBom(t){ return t.charCodeAt(0) === 0xFEFF ? t.slice(1) : t; }
+
+function detectCSVSep(text){
+  const first = (stripBom(text).split(/\r?\n/)[0]) || "";
+  const semi = (first.match(/;/g) || []).length;
+  const comma = (first.match(/,/g) || []).length;
+  return semi > comma ? ";" : ",";
+}
+
+function parseCSV(text){
+  const sep = detectCSVSep(text);
+  const rows = []; let row = [], cur = "", q = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (q){
+      if (c === '"'){
+        if (text[i + 1] === '"'){ cur += '"'; i++; }
+        else q = false;
+      } else cur += c;
+      continue;
+    }
+    if (c === '"'){ q = true; continue; }
+    if (c === sep){ row.push(cur); cur = ""; continue; }
+    if (c === "\n" || c === "\r"){
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(cur); rows.push(row); row = []; cur = "";
+      continue;
+    }
+    cur += c;
+  }
+  if (cur !== "" || row.length){ row.push(cur); rows.push(row); }
+  return rows;
+}
+
+/* ================= اسکنر بارکد ================= */
+let scanner = null;
+let scanBusy = false;
+function openScanner(onDone){
+  if (!window.Html5Qrcode){
+    toast("info", "کتابخانه اسکنر لود نشد؛ بارکد را تایپ کنید");
+    return;
+  }
+  openModal(
+    '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.12);padding-bottom:14px;margin-bottom:16px">' +
+      '<p class="xb sm">📷 اسکن بارکد کتاب</p>' +
+      '<button class="iconbtn" style="background:rgba(255,255,255,.1);color:#fff" onclick="closeScanner()">✕</button></div>' +
+    '<div class="scanframe"><div id="scanRegion"></div>' +
+      '<div class="scanbox"><div class="in"><span class="laser"></span></div></div></div>' +
+    '<p id="scanErr" class="xs muted" style="text-align:center;margin-top:14px;line-height:1.8;color:rgba(244,240,230,.7)">بارکد پشت جلد کتاب (ISBN) را داخل کادر نگه دارید…</p>' +
+    '<div class="scan-actions">' +
+      '<button class="btn line" style="height:38px;font-size:11px;background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18);color:#fff" onclick="pickScanImage()">📷 عکس بگیر / از گالری انتخاب کن</button>' +
+      '<button class="btn ghost" style="height:38px;font-size:11px;color:rgba(244,240,230,.92)" onclick="retryCamera()">↻ تلاش دوباره برای دوربین</button>' +
+    '</div>' +
+    '<input id="scanFileInput" type="file" accept="image/*" capture="environment" style="display:none" onchange="scanFromImage(event)" />' +
+    '<p class="scan-tip">اگر دوربین زنده در این صفحه باز نشد، با دکمه بالا از بارکد عکس بگیرید؛ سیستم از روی عکس هم بارکد را می‌خواند.</p>',
+    true
+  );
+  window.__scanDone = code => { closeScanner(); onDone(code); };
+  setTimeout(startScanner, 60);
+}
+function scannerFormats(){
+  return [
+    Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.EAN_8,
+    Html5QrcodeSupportedFormats.UPC_A, Html5QrcodeSupportedFormats.UPC_E,
+    Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.CODE_39
+  ];
+}
+function startScanner(){
+  scanBusy = false;
+  try {
+    scanner = new Html5Qrcode("scanRegion", { verbose: false, formatsToSupport: scannerFormats() });
+    let fired = false;
+    scanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 280, height: 150 } },
+      code => {
+        if (fired) return; fired = true;
+        try { navigator.vibrate && navigator.vibrate(70); } catch(e){}
+        window.__scanDone(code.trim());
+      },
+      () => {}
+    ).catch(() => {
+      $("scanErr").innerHTML = "⚠️ دسترسی به دوربین زنده در این صفحه ممکن نشد.<br>روی «عکس بگیر / از گالری انتخاب کن» بزنید تا از روی عکس بارکد خوانده شود.";
+    });
+  } catch(e){
+    $("scanErr").innerHTML = "⚠️ دوربین زنده در دسترس نیست.<br>از دکمه «عکس بگیر / از گالری انتخاب کن» استفاده کنید.";
+  }
+}
+function retryCamera(){
+  closeScannerInstance();
+  $("scanErr").textContent = "در حال تلاش دوباره برای باز کردن دوربین…";
+  setTimeout(startScanner, 80);
+}
+function pickScanImage(){
+  const el = $("scanFileInput");
+  if (el) el.click();
+}
+async function scanFromImage(ev){
+  const file = ev.target.files && ev.target.files[0];
+  if (!file || scanBusy) return;
+  scanBusy = true;
+  $("scanErr").innerHTML = "در حال خواندن بارکد از روی عکس…";
+  try {
+    closeScannerInstance();
+    const reader = new Html5Qrcode("scanRegion", { verbose: false, formatsToSupport: scannerFormats() });
+    const code = await reader.scanFile(file, true);
+    try { reader.clear(); } catch(e){}
+    try { navigator.vibrate && navigator.vibrate(70); } catch(e){}
+    window.__scanDone(String(code).trim());
+  } catch(e){
+    $("scanErr").innerHTML = "⚠️ از روی این عکس بارکدی خوانده نشد.<br>نور بیشتر، فوکوس بهتر و نزدیک‌تر گرفتن بارکد معمولاً مشکل را حل می‌کند.";
+  } finally {
+    scanBusy = false;
+    ev.target.value = "";
+  }
+}
+function closeScannerInstance(){
+  if (scanner){
+    try { scanner.stop().catch(()=>{}).then(()=>{ try{scanner.clear();}catch(e){} }); } catch(e){}
+    scanner = null;
+  }
+}
+function closeScanner(){
+  closeScannerInstance();
+  closeModal();
+}
+</script>
+</body>
+</html>

@@ -964,16 +964,19 @@ function openImport(){
   const fileIco = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
   openModal(
     '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:14px">' +
-      '<p class="xb sm" style="display:flex;align-items:center;gap:8px;color:var(--mossd)">' + fileIco + ' ورود گروهی کتاب‌ها از اکسل</p>' +
+      '<p class="xb sm" style="display:flex;align-items:center;gap:8px;color:var(--mossd)">' + fileIco + ' ورود و بروزرسانی گروهی از اکسل</p>' +
       '<button class="iconbtn" style="background:rgba(34,29,19,.07)" onclick="closeModal()">✕</button></div>' +
 
     // گام ۱ — نمونه
     '<div style="display:flex;gap:10px;align-items:center;border:1.5px dashed rgba(12,107,76,.35);background:rgba(220,239,228,.4);border-radius:14px;padding:12px 14px;margin-bottom:14px">' +
       '<div style="flex:1;min-width:0">' +
         '<p class="xs xb" style="color:var(--mossd)">گام ۱ — فایل نمونه را بگیرید</p>' +
-        '<p class="xs muted" style="margin-top:3px;font-size:10.5px;line-height:1.8">ستون‌ها: بارکد، عنوان، نویسنده، ناشر، کد تنوع دیجی‌کالا و موجودی اولیه (اختیاری)</p>' +
+        '<p class="xs muted" style="margin-top:3px;font-size:10.5px;line-height:1.8">فایل همه کتاب‌ها را با موجودی فعلی بگیرید، تغییر دهید و دوباره آپلود کنید. برای کتاب جدید، ردیف تازه اضافه کنید.</p>' +
       '</div>' +
-      '<button class="btn line" style="height:36px;font-size:11px;flex-shrink:0" onclick="dlSample(this)">دانلود نمونه</button></div>' +
+      '<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">' +
+        '<button class="btn moss" style="height:36px;font-size:11px" onclick="dlAll(this)">دانلود همه کتاب‌ها</button>' +
+        '<button class="btn line" style="height:36px;font-size:11px" onclick="dlSample(this)">فایل نمونه خالی</button>' +
+      '</div></div>' +
 
     // گام ۲ — انتخاب فایل
     '<p class="xs xb muted" style="margin-bottom:8px">گام ۲ — فایل پرشده را بارگذاری کنید</p>' +
@@ -1036,6 +1039,18 @@ async function dlSample(btn){
   finally { btn.disabled = false; btn.textContent = old; }
 }
 
+async function dlAll(btn){
+  if (btn.disabled) return;
+  const old = btn.textContent;
+  btn.disabled = true; btn.textContent = "در حال ساخت…";
+  try {
+    const f = await api("apiExportBooks");
+    downloadBase64(f.name, f.base64, f.mime);
+    toast("ok", "فایل همه کتاب‌ها دانلود شد");
+  } catch(e){ toast("err", e.message); }
+  finally { btn.disabled = false; btn.textContent = old; }
+}
+
 async function importStart(){
   if (!impFile || impBusy) return;
   impBusy = true;
@@ -1052,11 +1067,12 @@ async function importStart(){
       report = await api("apiImportBooks", parseCSV(text));
     } else {
       const dataUrl = await readAsDataUrl(impFile);
-      report = await api("apiImportExcel", { name: impFile.name, base64: dataUrl.split(",")[1] });
+      report = await api("apiSyncBooks", { name: impFile.name, base64: dataUrl.split(",")[1] });
     }
     renderImpReport(report);
-    if (report.inserted > 0){
-      toast("ok", faInt(report.inserted) + " کتاب جدید ثبت شد");
+    const changed = (report.inserted || 0) + (report.updated || 0) + (report.stockChanged || 0);
+    if (changed > 0){
+      toast("ok", "تغییرات ثبت شد: " + faInt(report.inserted || 0) + " جدید، " + faInt(report.updated || 0) + " ویرایش، " + faInt(report.stockChanged || 0) + " تغییر موجودی");
       await refresh();
       renderBooks();
     }
@@ -1080,7 +1096,10 @@ function renderImpReport(r){
       box(r.duplicates, "تکراری (رد شد)", "var(--golds)", "var(--gold)") +
       box(r.failed.length, "خطادار", r.failed.length ? "var(--bloods)" : "rgba(34,29,19,.05)", r.failed.length ? "var(--blood)" : "var(--ink2)") +
     '</div>';
-  if (r.stockTx > 0){
+  if (r.updated !== undefined || r.stockChanged !== undefined){
+    h += '<p class="xs b" style="background:rgba(220,239,228,.6);border-radius:10px;padding:8px 10px;margin-top:10px;color:var(--mossd);font-size:10.5px;line-height:1.8">' +
+      'ویرایش اطلاعات: ' + faInt(r.updated || 0) + ' کتاب — تغییر موجودی: ' + faInt(r.stockChanged || 0) + ' کتاب (به‌عنوان گردش ثبت شد).</p>';
+  } else if (r.stockTx > 0){
     h += '<p class="xs b" style="background:rgba(220,239,228,.6);border-radius:10px;padding:8px 10px;margin-top:10px;color:var(--mossd);font-size:10.5px;line-height:1.8">موجودی اولیه ' + faInt(r.stockTx) + ' عنوان هم به‌عنوان گردش «خرید» ثبت شد.</p>';
   }
   if (r.failed.length){

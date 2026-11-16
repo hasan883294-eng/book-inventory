@@ -894,6 +894,7 @@ function openEditBook(id){
       '<div class="g12"><div><label class="lbl">نویسنده</label><input id="ebAuthor" class="inp" value="' + esc(b.author) + '" /></div>' +
       '<div><label class="lbl">ناشر</label><input id="ebPub" class="inp" value="' + esc(b.publisher) + '" /></div></div>' +
       '<div><label class="lbl">کد تنوع دیجی‌کالا (DKPC)</label><input id="ebDkpc" class="inp mono" dir="ltr" style="text-align:left" value="' + esc(b.dkpc) + '" placeholder="DKPC-..." /><span class="hint">برای اتصال خودکار آینده به سفارش‌های دیجی‌کالا</span></div>' +
+      '<div><label class="lbl">موجودی فعلی</label><input id="ebStock" class="inp mono" dir="ltr" inputmode="numeric" style="text-align:left" value="' + Number(b.stock || 0) + '" /><span class="hint">تغییر این عدد به‌عنوان تنظیم موجودی در سوابق ثبت می‌شود</span></div>' +
     '</div>' +
     '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">' +
       '<button class="btn ghost" onclick="closeModal()">انصراف</button>' +
@@ -901,7 +902,7 @@ function openEditBook(id){
   );
 }
 async function saveEditBook(id){
-  const p = { id, barcode: $("ebBarcode").value.trim(), title: $("ebTitle").value.trim(), author: $("ebAuthor").value.trim(), publisher: $("ebPub").value.trim(), dkpc: $("ebDkpc").value.trim() };
+  const p = { id, barcode: $("ebBarcode").value.trim(), title: $("ebTitle").value.trim(), author: $("ebAuthor").value.trim(), publisher: $("ebPub").value.trim(), dkpc: $("ebDkpc").value.trim(), stock: $("ebStock").value.trim() };
   if (!p.barcode || !p.title){ toast("err", "بارکد و عنوان نمی‌توانند خالی باشند"); return; }
   try {
     await api("apiUpdateBook", p);
@@ -1262,5 +1263,5 @@ function closeScanner(){
   closeModal();
 }
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5b44b7ffeccdc76',t:'MTc5NDgwOTAzMQ=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5b44b7ffeccdc76',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
